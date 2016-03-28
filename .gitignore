@@ -1,0 +1,14 @@
+*.asm
+fw/main.c.ini
+fw/main.cp
+fw/repiter.bmk
+*.brk
+fw/repiter.c.ini
+fw/repiter.dbg
+*.dct
+fw/repiter.dlt
+fw/repiter.log
+*.lst
+fw/repiter.mcpav_callertable.txt
+*.dic
+fw/repiter.wch
