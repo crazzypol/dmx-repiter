@@ -36,8 +36,6 @@ void InitTimer1();
 void StartDMX();
 unsigned int GetDelaymSec();
 
-void DebugPin();
-
 //interrupt functions
 void Timer0Overflow_ISR() iv IVT_ADDR_TIMER0_OVF {
   TCNT0 = 60;
@@ -70,7 +68,6 @@ void Usart_RXC_ISR() iv IVT_ADDR_USART__RXC {
   if (UCSRA&(1<<FE)){
     usartRxBuf = UDR;
     RxState = RxBreak;
-    DebugPin();
   }else{
     usartRxBuf = UDR;
     if (RxState != RxIdle){
@@ -181,12 +178,4 @@ void StartDMX(){
   UCSRB |= (1<<TXEN) | (1<<TXCIE);
   UDR = 0;                            //starting first byte is always 0
   TxState = TxData;                   //state transmitter for transmit data
-}
-
-void DebugPin(){
-     PORTD.B6 = 0;
-     _asm nop;
-     _asm nop;
-     _asm nop;
-     PORTD.B6 = 1;
 }
