@@ -10,11 +10,13 @@
 //variables
 unsigned char usartRxBuf;         //temporary rx byte
 unsigned char Dmx[512];           //Dmx array
+unsigned int Pckt[10];
+unsigned char PcktCnt;
+unsigned int Packets, PacketsMin, PacketsMax;
 unsigned char dip;
 unsigned int RxByteCount, TxByteCount;         //counter input and output data
 unsigned int TimerCount, RxTimeout;         //counter timeout 25ms tick
 unsigned char EnableTransmit;     //flag enabled transmission
-//unsigned int LedCount;            //counter timeout led light
 
 //enumerates
 enum {
@@ -34,9 +36,6 @@ void SetPins();
 void Timer0_init();
 void InitTimer1();
 void StartDMX();
-unsigned int GetDelaymSec();
-
-void DebugPin();
 
 //interrupt functions
 void Timer0Overflow_ISR() iv IVT_ADDR_TIMER0_OVF {
@@ -70,24 +69,31 @@ void Usart_RXC_ISR() iv IVT_ADDR_USART__RXC {
   if (UCSRA&(1<<FE)){
     usartRxBuf = UDR;
     RxState = RxBreak;
-    DebugPin();
   }else{
     usartRxBuf = UDR;
-    if (RxState != RxIdle){
-       if (RxState == RxData){
+    if (RxState!=RxIdle){
+       if (RxState==RxData){
           if (RxByteCount<512){
              Dmx[RxByteCount] = usartRxBuf;
              RxByteCount++;
           }else{
-
              RxState = RxIdle;
           }
        }else{
+          Pckt[PcktCnt++] = RxByteCount;
+          if (PcktCnt>9) PcktCnt = 0;
+          if (PacketsMin>RxByteCount&&PacketsMax<RxByteCount){
              TimerCount = 0;
              EnableTransmit = 1;
              RxByteCount = 0;
              RxTimeout = 48;
-          if(usartRxBuf == 0)
+          }else{
+             TimerCount = 0;
+             EnableTransmit = 0;
+             RxByteCount = 0;
+             RxTimeout = 48;
+          }
+          if(usartRxBuf==0)
           {
              RxState = RxData;
           }
@@ -140,6 +146,7 @@ void SetPins(){
 
 //main function
 void main() {
+  unsigned int i;
   TxState = TxIdle;
   RxState = RxIdle;
   SetPins();
@@ -152,8 +159,13 @@ void main() {
      Dmx[RxByteCount]=0;
      RxByteCount++;
   }
+  PcktCnt=0;
+  while (PcktCnt<10){
+        Pckt[PcktCnt++]=0;
+  }
   dip =  (~(PINC|0xF0));
   RxByteCount=0;
+  PcktCnt=0;
   EnableTransmit = 0;
   TxByteCount = 0;
   RxTimeout = 48;
@@ -163,8 +175,15 @@ void main() {
 
 
   while(1){
-    Delay_ms(150);
+    Delay_ms(250);
     dip = ~(PINC|0xF0);
+    i=0;
+    while (i<10){
+      Packets+=Pckt[i++];
+      Packets/=10;
+    }
+    PacketsMin=Packets-5*Packets/100;
+    PacketsMax=Packets+5*Packets/100;
   }
 }
 
@@ -181,12 +200,4 @@ void StartDMX(){
   UCSRB |= (1<<TXEN) | (1<<TXCIE);
   UDR = 0;                            //starting first byte is always 0
   TxState = TxData;                   //state transmitter for transmit data
-}
-
-void DebugPin(){
-     PORTD.B6 = 0;
-     _asm nop;
-     _asm nop;
-     _asm nop;
-     PORTD.B6 = 1;
 }
