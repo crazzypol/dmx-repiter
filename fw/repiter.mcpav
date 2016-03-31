@@ -35,11 +35,21 @@ Count=0
 [OTHER_FILES]
 Count=0
 [SEARCH_PATH]
+<<<<<<< HEAD
 Count=4
 Path0=D:\mikroC PRO for AVR\defs\
 Path1=D:\mikroC PRO for AVR\uses\lte64kw\
 Path2=D:\crazzy\dmx-repiter\fw\
 Path3=C:\Users\crazzy\Google Диск\Проекты\VADIM\fw\
+=======
+Count=6
+Path0=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for AVR\defs\
+Path1=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for AVR\uses\lte64kw\
+Path2=D:\crazzy\projects\dmx-repiter\fw\
+Path3=D:\mikroC PRO for AVR\defs\
+Path4=D:\mikroC PRO for AVR\uses\lte64kw\
+Path5=C:\Users\crazzy\Google Диск\Проекты\VADIM\fw\
+>>>>>>> origin/master
 [HEADER_PATH]
 Count=0
 [HEADERS]

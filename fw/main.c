@@ -36,6 +36,10 @@ void SetPins();
 void Timer0_init();
 void InitTimer1();
 void StartDMX();
+<<<<<<< HEAD
+=======
+unsigned int GetDelaymSec();
+>>>>>>> origin/master
 
 //interrupt functions
 void Timer0Overflow_ISR() iv IVT_ADDR_TIMER0_OVF {
@@ -200,4 +204,8 @@ void StartDMX(){
   UCSRB |= (1<<TXEN) | (1<<TXCIE);
   UDR = 0;                            //starting first byte is always 0
   TxState = TxData;                   //state transmitter for transmit data
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/master
